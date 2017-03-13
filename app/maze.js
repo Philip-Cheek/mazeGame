@@ -2,7 +2,7 @@ class Maze{
 
     constructor(size){
         this.map = [];
-        this.size = size;
+        this.size = size > 5 ? size : 5;
         this.start;
         this.end;
         this.directions = [
@@ -57,13 +57,13 @@ class Maze{
                 [this.size - 1, null], 
                 [null, 0], 
                 [null, this.size - 1]
-            ];
+            ], mSize = this.size;
 
             let side = sides[Math.floor(Math.random() * sides.length)];
 
             for (let i = 0; i < side.length; i++){
                 if (side[i] !== 0 && !side[i]){
-                    side[i] = Math.floor(Math.random() * this.size);
+                    side[i] = Math.floor(Math.random() * (mSize - 1)) + 1;
                 }
             }
 
@@ -71,6 +71,7 @@ class Maze{
 
             if (endTile && endTile.visited && !this.start){
                 this.start = side;
+                console.log(side);
             }else if (endTile && endTile.visited){
                 this.end = side;
             }

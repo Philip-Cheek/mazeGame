@@ -6,31 +6,35 @@ class Player {
         this.maxDistance = 500;
         this.pointer = [0, 0];
         this.dimen = {
-         'width': 60,
-          'height': 60
+            'width': 60,
+            'height': 60
         };
         this.history = [];
     }
 
     draw(ctx, scale, offset){
-        const x = this.coord[0] - ((this.dimen.width)/2 * scale) - offset[0], 
-              y = this.coord[1] - ((this.dimen.height)/2 * scale) - offset[1];
+        const x = (this.coord[0] - (this.dimen.width/2) - offset[0]), 
+              y = (this.coord[1] - (this.dimen.width/2) - offset[1]);
 
         this.handleHistory(ctx, offset, scale);
-
+       
         ctx.save();
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = 'white';
         ctx.fillRect(x, y, this.dimen.width, this.dimen.height);
         ctx.restore();
 
-        this.updateCoord(scale, offset);
+        this.updateCoord(scale, offset, ctx);
     }
 
     listenForMovement(){
         const self = this;
 
         document.addEventListener('mousemove', function(e){
-            self.pointer = [e.pageX, e.pageY]
+            self.pointer = [e.x, e.y]
+        });
+
+        document.addEventListener('mouseout', function(e){
+            self.pointer = [null, null];
         });
     }
 
@@ -45,7 +49,7 @@ class Player {
         let novel = true;
 
         ctx.save();
-        ctx.fillStyle = 'pink';
+        ctx.fillStyle = '#4c6b8a';
 
         for (let i = this.history.length - 1; i >= 0; i--){
             const h = this.history[i],
@@ -65,7 +69,7 @@ class Player {
                     Math.pow(c[0] - h[0], 2) + Math.pow(c[1] - h[1], 2)
                 );
 
-                novel = dist > 3;
+                novel = dist > 4;
             }
         }
 
@@ -76,22 +80,31 @@ class Player {
         } 
     }
 
-    updateCoord(scale, offset){
+    updateCoord(scale, offset, ctx){
+        if (!this.pointer[0] || !this.pointer[1]){
+            return;
+        };
+
         const maxDist = this.maxDistance,
-                    pointer = [
-                     this.pointer[0]/scale + offset[0],
-                     this.pointer[1]/scale + offset[1]
-                    ], 
+              pointer = [
+                this.pointer[0]/scale + offset[0],
+                this.pointer[1]/scale + offset[1]
+              ], 
+              pCoord = [
+                this.coord[0],
+                this.coord[1]
+              ],
 
-                    xDist = pointer[0] - this.coord[0],
-                    yDist = pointer[1] - this.coord[1],
-                    dist = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2)),
 
-                    speed = dist <  maxDist ? this.speed * (dist/maxDist) : this.speed,
-                    angle = dist > 0 ? Math.asin(yDist/dist) : 0;
+              xDist = pointer[0] - pCoord[0],
+              yDist = pointer[1] - pCoord[1],
+              dist = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2)),
+
+              speed = dist <  maxDist ? this.speed * (dist/maxDist) : this.speed,
+              angle = dist > 0 ? Math.asin(yDist/dist) : 0;
 
         let xVelocity = speed * Math.cos(angle),
-                yVelocity = speed * Math.sin(angle);
+            yVelocity = speed * Math.sin(angle);
 
         if (pointer[0] < this.coord[0]){ xVelocity *= -1 };
 
