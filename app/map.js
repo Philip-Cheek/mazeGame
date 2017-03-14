@@ -3,28 +3,30 @@ class Map {
     constructor(tileSize){
         this.tSize = tileSize;
         this.tiles = [];
-        this.history = [];
         this.start;
         this.sTiles = {};
         this.ends = [];
         this.vForm = [0, 0];
-        this.idx = 0;
+        this.colors = ["black", "white"];
+        this.wIdx = 0
     }
 
     draw(ctx, offset, stop){
-        const colors = ['#69111e', '#7D1424'];
-              let idx = 0;
+        const finish = this.ends[1];
+        let idx = 0;
 
         ctx.save();
         for (let y = 0; y < this.tiles.length; y++){
             for (let x = 0; x < this.tiles[y].length; x++){
                 if (this.tiles[y][x]){
-                    ctx.fillStyle = colors[idx];
+                    ctx.fillStyle = this.colors[idx];
                     const tX = (x * this.tSize) - offset[0],
                           tY = (y * this.tSize) - offset[1];
 
                     ctx.fillRect(tX, tY, this.tSize, this.tSize);
-                } 
+                }else if (x == finish[0] && y == finish[1]){
+                    this.drawWin(ctx, offset);
+                }
 
                 idx = idx < 1 ? 1 : 0;
 
@@ -95,11 +97,12 @@ class Map {
         const width = dimensions.width,
               height = dimensions.height,
               pX = coord[0] - (width/2),
-              pY = coord[1] - (height/2);
+              pY = coord[1] - (height/2),
+              finish = this.ends[1];
 
         for (let y = 0; y < this.tiles.length; y++){
             for (let x = 0; x < this.tiles[y].length; x++){
-                if (this.tiles[y][x]){
+                if (this.tiles[y][x] || (x == finish[0] && y == finish[1])){
                     const tX = x * this.tSize,
                           tY = y * this.tSize,
                           lLeft = pX > tX,
@@ -114,21 +117,25 @@ class Map {
                               tBottom = pY  < tY + this.tSize;
 
                         if (bTop && bBottom || tTop && tBottom || !tTop && !bBottom){      
-                            return true;
+                            return {
+                                'status': true, 
+                                'finish': x == finish[0] && y == finish[1]
+                            }
                         }
                     }
                 }
             }
         }
 
-        return false;
+        return {'status': false, 'finish': false};
     }
 
 
-    buildMaze(size){
+    buildMaze(size, colors){
         const maze = new Maze(size),
               fullSize = (size * 2) + 1;
 
+        if (colors){ this.colors = colors };
         this.vForm = [0, 0];
         maze.assemble();
         this.addEnds(maze, fullSize);
@@ -186,10 +193,12 @@ class Map {
                   r = this.ends[i][0] + this.sTiles.adjust[0]
 
             this.tiles[c][r] = false;
+            if (i > 0){this.ends[i] = [r, c]}
         }
     }
 
     addEnds(maze, fSize){
+        this.ends = [];
         const ends = ['start', 'end'];
         var dir, sCoord;
 
@@ -247,6 +256,19 @@ class Map {
         this.setStartTiles(dir, sCoord, fSize);
     }
 
+    drawWin(ctx, offset){
+        const color = ['#add9e6', '#0490d6'][this.wIdx],
+              x = this.ends[1][0] * this.tSize + this.tSize/2 - offset[0],
+              y = this.ends[1][1] * this.tSize + this.tSize/2 - offset[1],
+              radius = this.tSize * .7;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 50, 0, 2*Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        this.wIdx = this.wIdx > 0 ? 0 : 1
+    }
     setStartTiles(dir, coord, size){
         this.sTiles.tiles = [];
         this.sTiles.pos = [];
@@ -299,8 +321,24 @@ class Map {
 
                 break;
         }
+    }
 
+    pickTColors(){
+        const randomIDX = Math.floor(Math.random() * this.colorSet.length);
 
+        if (this.colorHistory.length == this.colorSet.length){    
+            this.colorHistory = [
+                this.colorHistory[this.colorHistory.length - 1]
+            ];
+        }
 
+        for (var i = 0; i < this.colorHistory.length; i++){
+            if (this.colorHistory[i] == randomIDX){
+                return this.pickTColors();
+            }
+        }
+
+        this.colorHistory.push(randomIDX);
+        return this.colorSet(this.colorHistory[randomIDX]);
     }
 }

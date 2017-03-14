@@ -4,11 +4,13 @@ class ViewPort {
         this.coord = [0, 0];
         this.maxDist = maxDist;
         this.zChange = .9
+        this.zMax;
+        this.difficulty = 10;
     }
 
     offset(pCoord, scale, cMax){
         const center = this.getCenter(scale),
-              maxDist = cMax ? cMax : this.maxDist * scale,
+              maxDist = cMax ? cMax : this.maxDist,
               xDist = pCoord[0] - center[0],
               yDist = pCoord[1] - center[1],
               distance = Math.sqrt(Math.pow(xDist,2) + Math.pow(yDist,2));
@@ -31,20 +33,41 @@ class ViewPort {
         return this.coord;
     }
 
-    zoom(zCoord, scale, zRate){
-        const vCoord = this.getCenter(scale),
-              xDist = zCoord[0] - vCoord[0],
-              yDist = zCoord[1] - vCoord[1],
-              dist = Math.sqrt(Math.pow(xDist,2) + Math.pow(yDist,2));
+    zoom(zCoord, scale, percent){
+         const vCoord = this.getCenter(scale),
+               xDist = zCoord[0] - vCoord[0],
+               yDist = zCoord[1] - vCoord[1],
+               dist = Math.sqrt(Math.pow(xDist,2) + Math.pow(yDist,2));
 
-        let cMax = dist - dist * zRate > 15 ? dist * zRate : dist - 15;
-        if (cMax < 0){ cMax = 0}
+        if (!this.zMax){ this.zMax = dist - this.maxDist};
+        
+        const p = 1 - percent > 0 ? 1 - percent : 0,
+              d = this.zMax * p;
 
-
-        return this.offset(
-            zCoord, scale, cMax
-        );
+        const cMax = d > this.maxDist ? d : this.maxDist;
+        return this.offset(zCoord, scale, cMax);
     }
+    // zoom(zCoord, scale, percent, zRate){
+    //     const vCoord = this.getCenter(scale),
+    //           xDist = zCoord[0] - vCoord[0],
+    //           yDist = zCoord[1] - vCoord[1],
+    //           dist = Math.sqrt(Math.pow(xDist,2) + Math.pow(yDist,2));
+
+    //     let cMax = dist - dist * zRate > 15 ? dist * zRate : dist - 15;
+
+    //     if (cMax < this.maxDist){
+    //         cMax = this.maxDist
+    //     }else if (percent > .85){
+    //         zRate *= .9 - (percent - .85)
+    //         cMax = dist - dist * zRate > 15 ? dist * zRate : dist - 15;
+    //         if (cMax < this.maxDist){ cMax = this.maxDist }
+    //     }
+
+
+    //     return this.offset(
+    //         zCoord, scale, cMax
+    //     );
+    // }
 
     getCenter(scale){
         return [

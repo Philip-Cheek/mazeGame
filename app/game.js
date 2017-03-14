@@ -10,15 +10,23 @@ class Game {
         this.sRate = 800;
         this.scale;
         this.stamp = true;
+        this.colorHistory = [];
+        this.difficulty = 5
+        this.colorSet = [
+            ['#69111e', '#7D1424'],
+            ['#27ae60', '#2ecc71'],
+            ['#e67e22', '#d35400'],
+            ['#95a5a6', '#7f8c8d'],
+            ['#9b59b6', '#8e44ad']
+        ]
     }
 
     start(){
-        const self = this;
+        const self = this,
+              colors = this.pickTColors();
 
-        // this.player.listenForMovement();
-        this.map.buildMaze(10);
-        this.stamp = 0
-        // this.setPCoordAtStart();
+        this.map.buildMaze(this.difficulty, colors);
+        this.player.reSet();
         this.sRate = 4000;
 
         window.requestAnimFrame(function(){
@@ -62,9 +70,11 @@ class Game {
 
         this.sRate *= .99;
         this.setScreen();
+        const percent = (4000 - this.sRate)/(4000 - 800)
         const offset = this.viewPort.zoom(
             this.player.coord,
             this.scale,
+            percent,
             .935
         );
 
@@ -103,8 +113,11 @@ class Game {
                 this.player.dimen
               );
 
-
-        if (pCollision){
+        if (pCollision.status && pCollision.finish){
+            this.difficulty += 2;
+            this.start();
+            return;
+        }else if (pCollision.status){
             this.setPCoordAtStart();
         }
 
@@ -134,5 +147,24 @@ class Game {
 
     setPCoordAtStart(){
         this.player.coord = [this.map.start[0], this.map.start[1]];
+    }
+
+    pickTColors(){
+        const randomIDX = Math.floor(Math.random() * this.colorSet.length);
+
+        if (this.colorHistory.length == this.colorSet.length){    
+            this.colorHistory = [
+                this.colorHistory[this.colorHistory.length - 1]
+            ];
+        }
+
+        for (var i = 0; i < this.colorHistory.length; i++){
+            if (this.colorHistory[i] == randomIDX){
+                return this.pickTColors();
+            }
+        }
+
+        this.colorHistory.push(randomIDX);
+        return this.colorSet[randomIDX];
     }
 }

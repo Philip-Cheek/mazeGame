@@ -10,6 +10,7 @@ class Player {
             'height': 60
         };
         this.history = [];
+        this.listen = false;
     }
 
     draw(ctx, scale, offset){
@@ -26,11 +27,24 @@ class Player {
         this.updateCoord(scale, offset, ctx);
     }
 
+    reSet(){
+        this.history = [];
+        this.listen = !this.listen;
+        this.pointer = [null, null];
+        console.log(this.listen);
+    }
+
     listenForMovement(){
+        console.log("IN",this.listen);
+        if (!this.listen){
+            this.listen = true;
+            return;
+        }
+
         const self = this;
 
         document.addEventListener('mousemove', function(e){
-            self.pointer = [e.x, e.y]
+            if (self.listen){ self.pointer = [e.x, e.y] };
         });
 
         document.addEventListener('mouseout', function(e){
