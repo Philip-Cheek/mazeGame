@@ -5,7 +5,6 @@ class ViewPort {
         this.maxDist = maxDist;
         this.zChange = .9
         this.zMax;
-        this.difficulty = 10;
     }
 
     offset(pCoord, scale, cMax){

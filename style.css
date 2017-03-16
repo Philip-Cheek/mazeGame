@@ -5,4 +5,52 @@
 
 body{
 	background: #2C3E50;
+	position: relative;
 }
+
+#title{
+	z-index: 1;
+	display:none;
+	height:10%;
+	position:absolute;
+	right:0;
+	left:0;
+	top:10%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#menu{
+	z-index: 0;
+	display:none;
+	position: absolute;
+	right:0;
+	left:0;
+	top:-50%;
+	height:50%;
+	width:50%;
+	background: rgba(255,255,255,.4);
+	margin-left:auto;
+	margin-right:auto;
+	background: 'white';
+	border-radius:1em;
+}
+
+	#menu button{
+		background: white;
+		color:#2C3E50;
+		border:none;
+		font-size: 3em;
+		margin-left:calc(50% - 1.5em);
+		margin-top:15%;
+		padding:.3em;
+		transition:font-size .3s, margin-left .3s;
+	}
+
+	#menu button:hover{
+		cursor: pointer;
+		background:#2C3E50;
+		color:white;
+		font-size: 2.9em;
+		margin-left:calc(50% - 1.5em);
+	}

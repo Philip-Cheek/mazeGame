@@ -1,6 +1,11 @@
 window.onload = function(){
-    const game = new Game('canvas');
-    game.start();
+    // const game = new Game('canvas');
+    const hConfig = {
+    	'canvasID': 'canvas', 'titleID': 'title',
+    	'menuID': 'menu', 'startID': 'start'
+    }, homePage = new HomePage(hConfig);
+
+    homePage.init();
 };
 
 window.requestAnimFrame = (function(){

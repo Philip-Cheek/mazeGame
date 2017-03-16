@@ -11,20 +11,24 @@ class Map {
         this.wIdx = 0
     }
 
-    draw(ctx, offset, stop){
-        const finish = this.ends[1];
+    draw(ctx, offset, scale, stop){
+        console.log("CALLED");
+        const finish = this.ends.length > 0 ? this.ends[1] : null;
         let idx = 0;
 
-        ctx.save();
         for (let y = 0; y < this.tiles.length; y++){
+            if (y  * this.tSize - offset[1] > window.innerHeight/scale && this.colors[0] == this.colors[1]){ break };
+
             for (let x = 0; x < this.tiles[y].length; x++){
+                if (x * this.tSize - offset[0] > window.innerWidth/scale && this.colors[0] == this.colors[1]){ break };
+
                 if (this.tiles[y][x]){
                     ctx.fillStyle = this.colors[idx];
                     const tX = (x * this.tSize) - offset[0],
                           tY = (y * this.tSize) - offset[1];
 
                     ctx.fillRect(tX, tY, this.tSize, this.tSize);
-                }else if (x == finish[0] && y == finish[1]){
+                }else if (finish && x == finish[0] && y == finish[1]){
                     this.drawWin(ctx, offset);
                 }
 
@@ -50,7 +54,7 @@ class Map {
         ]
     }
 
-    visualForm(ctx, offset, grow){
+    visualForm(ctx, offset, grow, scale){
         let col = this.vForm[1],
             row = this.vForm[0];
 
@@ -63,7 +67,7 @@ class Map {
             }
         }
 
-        this.draw(ctx, offset, [row, col]);
+        this.draw(ctx, offset, scale, [row, col]);
 
         if (grow && col < this.tiles.length){
             if (row + 1 < this.tiles[col].length){
@@ -130,15 +134,25 @@ class Map {
         return {'status': false, 'finish': false};
     }
 
+    buildBackground(size, color){
+        const colors = [color, color];
+        this.buildMaze(size, colors, true);
+    }
 
-    buildMaze(size, colors){
+    buildMaze(size, colors, skipEnds){
         const maze = new Maze(size),
               fullSize = (size * 2) + 1;
 
         if (colors){ this.colors = colors };
         this.vForm = [0, 0];
         maze.assemble();
-        this.addEnds(maze, fullSize);
+
+        if(!skipEnds){
+            this.addEnds(maze, fullSize);
+        }else{
+            this.sTiles = {'tiles':[], 'adjust': [0,0], 'pos': null}
+        }
+
         this.assembleTMap(fullSize);
 
         for (let c = 0; c < size; c++){
@@ -168,22 +182,29 @@ class Map {
         }
     }
 
-    assembleTMap(size){
+    assembleTMap(size, noEnds){
         const sTiles = this.sTiles.tiles,
               pos = this.sTiles.pos;
 
         for (let c = 0; c < size + sTiles.length; c++){
             this.tiles[c] = [];
-            for (let r = 0; r < size + sTiles[0].length; r++){
-                const inColStart = c >= pos[1] && c < pos[1] + sTiles.length,
+            const rLen = sTiles.length > 0 ? sTiles[0].length : 0;
+            console.log(rLen);
+            for (let r = 0; r < size + rLen; r++){
+                if(!pos){
+                    this.tiles[c][r] = true;
+                }else{
+                    const inColStart = c >= pos[1] && c < pos[1] + sTiles.length,
                       inRowStart = r >= pos[0] && r < pos[0] + sTiles[0].length;
 
-                if (inColStart && inRowStart){
-                    this.tiles[c].push(sTiles[c - pos[1]][r - pos[0]]);
-                }else if (pos[0] === 0 || pos[0] == size){
-                    this.tiles[c].push((inColStart || !inRowStart) && c < size);
-                }else if (pos[1] === 0 || pos[1] == size){
-                    this.tiles[c].push((!inColStart || inRowStart) && r < size);
+                    if (inColStart && inRowStart){
+                        this.tiles[c].push(sTiles[c - pos[1]][r - pos[0]]);
+                    }else if (pos[0] === 0 || pos[0] == size){
+                        this.tiles[c].push((inColStart || !inRowStart) && c < size);
+                    }else if (pos[1] === 0 || pos[1] == size){
+                        this.tiles[c].push((!inColStart || inRowStart) && r < size);
+                    }
+
                 }
             }
         }

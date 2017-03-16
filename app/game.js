@@ -47,7 +47,7 @@ class Game {
             this.map.dimen()[1]/2
         ], offset = this.viewPort.offset(vCenter, this.scale);
 
-        this.map.visualForm(this.context, offset, this.stamp);
+        this.map.visualForm(this.context, offset, this.stamp, this.scale);
 
         this.stamp = !this.stamp;
         this.context.restore();
@@ -81,7 +81,7 @@ class Game {
 
         this.context.save();
         this.context.scale(this.scale, this.scale);
-        this.map.draw(this.context, offset);
+        this.map.draw(this.context, offset, this.scale);
         this.player.draw(this.context, this.scale, offset);
         this.context.restore;
 
@@ -124,7 +124,7 @@ class Game {
         this.context.save();
         this.context.scale(this.scale, this.scale);
 
-        this.map.draw(this.context, offset);
+        this.map.draw(this.context, offset, this.scale);
         this.player.draw(this.context, this.scale, offset);
 
         this.context.restore();
