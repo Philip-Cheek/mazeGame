@@ -1,0 +1,129 @@
+*{
+	padding:0;
+	margin:0;
+}
+
+body{
+	background: #2C3E50;
+	position: relative;
+}
+
+
+#clock{
+	display:none;
+	position: absolute;
+	z-index:4;
+	display:hidden;
+	right:0;
+	left:0;
+	text-align: center;
+	top:10%;
+	font-family: arial;
+	font-size:3em;
+	color:white;
+}
+
+#add{
+	display:none;
+	position: absolute;
+	z-index:4;
+	right:0;
+	left:calc(50% + .5em);
+	top:18%;
+	font-family: arial;
+	font-size:2em;
+	color:orange;
+}
+
+#title{
+	z-index: 13;
+	display:none;
+	height:10%;
+	position:absolute;
+	right:0;
+	left:0;
+	top:10%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+
+
+#overlay{
+	top:0;
+	left:0;
+	position: absolute;
+	height:100%;
+	width:100%;
+	z-index: 9;
+	background: black;
+	opacity:0;
+	display:none;
+}
+
+#overTitle{
+	position: absolute;
+	display:none;
+	height:40%;
+	right:0;
+	left:0;
+	top:10%;
+	z-index:10;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#overMenu{
+	position: absolute;
+	display:'none';
+	width:5em;
+	height:5em;
+	opacity:0;
+	right:0;
+	left:0;
+	top:10%;
+	top:50%;
+	z-index:11;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+
+#menu{
+	z-index: 0;
+	display:none;
+	position: absolute;
+	right:0;
+	left:0;
+	top:-50%;
+	height:50%;
+	width:50%;
+	background: rgba(255,255,255,.4);
+	margin-left:auto;
+	margin-right:auto;
+	background: 'white';
+	border-radius:1em;
+	z-index:12;
+}
+	#menu #time{
+		margin-top: 1em;
+	}
+	
+button{
+	margin-top:.5em;
+	background: white;
+	color:#2C3E50;
+	border:none;
+	font-size: 2em;
+	width:5.6em;
+	margin-left: calc(50% - 2.5em);
+	padding:.3em;
+	transition:font-size .3s;
+}
+
+button:hover{
+	cursor: pointer;
+	background:#2C3E50;
+	color:white;
+	font-size: 1.9em;
+}

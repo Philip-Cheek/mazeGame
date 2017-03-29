@@ -1,0 +1,35 @@
+<head>
+	<script type='text/javascript' src='/socket.io/socket.io.js'></script>
+	<script src = 'app/config.js'></script>
+	<script src = 'app/app.js'></script>
+	<script src = 'app/background.js'></script>
+	<script src = 'app/homeMenu.js'></script>
+	<script src = 'app/game.js'></script>
+	<script src = 'app/timeTrial.js'></script>
+	<script src = 'app/over.js'></script>
+	<script src = 'app/player.js'></script>
+	<script src = 'app/viewPort.js'></script>
+	<script src = 'app/map.js'></script>
+	<script src = 'app/maze.js'></script>
+	<script src = 'app/clock.js'></script>
+
+	<link rel = 'stylesheet' href = 'resources/style.css'/>
+</head>
+<body>
+	<canvas id = 'canvas'></canvas>
+	<h1 id = 'clock'>CLOCK</h1>
+	<h2 id = 'add'>+5<h2>
+	
+	<img id = 'title' src = 'resources/mazeTitle.png'/>
+	<div id = 'menu'>
+		<button id = 'time'>Time Trial</button>
+		<button id = 'two'>Two Player</button>
+	</div>
+
+	<div id = 'overlay'></div>
+	<img id = 'overTitle' src = 'resources/over.png'/>
+	<div id = 'overMenu'>
+		<button id = 'home'>Home</button>
+		<button id = 'restart'>Restart</button>
+	</div>
+</body>
