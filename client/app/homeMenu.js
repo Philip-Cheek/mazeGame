@@ -41,15 +41,19 @@ class HomeMenu {
 			  menuHeight = (menuOffset/window.innerHeight) * 100;
 
 		this.timeTrial.onclick = function(){
-			console.log("WHOULD");
 			s.closeUI();
 			s.timeStart();
 		}
 
 		this.twoPlayer.onclick = function(){
-			s.closeUI();
-			s.twoStart();
+			s.socket.emit('connectTwoP');
+			s.twoPlayer.disabled = true;
 		}
+
+		this.socket.on('connectedTwoP', function(roomID){
+			s.closeUI();
+			s.twoStart(roomID);
+		});
 
 		this.menu.style.top = "-" + menuHeight.toString() + "%"
 		this.animInfo.menuHeight = menuHeight * -1;		

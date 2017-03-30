@@ -17,10 +17,11 @@ class App {
 
 		this.menu = new HomeMenu(this.config, {
 			time: function(){
-				console.log("WHAT?") 
 				self.timeTrial = true 
 			},
-			two: function(){ self.timePlayer = true },
+			two: function(roomID){ 
+				self.twoPlayer = roomID;
+			}
 		});
 	}
 
@@ -29,7 +30,11 @@ class App {
 			const game = new TimeTrial(this.config);
 			game.start();
 		}else if (this.twoPlayer){
-			return;
+			const roomID = this.twoPlayer,
+			      game = new TwoPlayer(this.config, this.twoPlayer);
+
+			console.log("what?");
+			game.start();
 		}else{
 			const self = this;
 			if (inFrame){ this.menu.animate() };
