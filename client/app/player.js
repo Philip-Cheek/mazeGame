@@ -19,8 +19,6 @@ class Player {
     draw(ctx, offset, scale){
         const x = (this.coord[0] - (this.dimen.width/2) - offset[0]), 
               y = (this.coord[1] - (this.dimen.width/2) - offset[1]);
-
-        this.handleHistory(ctx, offset, scale);
        
         ctx.save();
         ctx.fillStyle = this.colors.player;

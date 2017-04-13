@@ -1,19 +1,21 @@
 {
-  "name": "prosepair-io",
+  "name": "mazeGame",
   "version": "1.0.0",
-  "description": "craft stories with either your friends or strangers in real time",
+  "description": "Navigate tricky mazes",
   "main": "index.js",
   "scripts": {
     "test": "command"
   },
   "dependencies": {
     "body-parser": "^1.15.0",
-    "mongoose": "^4.5.7",
     "express": "^4.13.4",
-    "express-session": "^1.14.0",
     "socket.io": "^1.4.5",
-    "mongo-sanitize": "^1.0.0",
-    "helmet": "^2.2.0"
+    "helmet": "^2.2.0",
+    "gulp": "latest",
+    "gulp-babel": "^6.1.2",
+    "babel-preset-es2015": "latest",
+    "gulp-concat": "latest",
+    "gulp-sourcemaps": "latest"
   },
   "author": "philip cheek",
   "license": "MIT"

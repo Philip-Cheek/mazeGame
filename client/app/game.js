@@ -50,7 +50,6 @@ class Game {
         const self = this,
               colors = this.pickTColors();
 
-        console.log("MAZE", maze);
         this.map.buildMaze(this.difficulty, colors, maze);
         this.player.reSet();
         this.sRate = 4000;
@@ -148,8 +147,12 @@ class Game {
 
 
     drawScreen(offset){
-        this.map.draw(this.context, offset, this.scale);
-        this.player.draw(this.context, offset, this.scale);
+        const ctx = this.context,
+              scale = this.scale;
+
+        this.map.draw(ctx, offset, scale);
+        this.player.handleHistory(ctx, offset, scale);
+        this.player.draw(ctx, offset, scale);
     }
 
     win(){

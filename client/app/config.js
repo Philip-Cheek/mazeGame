@@ -17,8 +17,7 @@ const config = {
       };
 
 window.onload = function(){
-  const app = new App(config);
-  app.run();
+  new App(config).run();
 }
 
 window.requestAnimFrame = (function(){

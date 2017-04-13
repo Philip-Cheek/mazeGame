@@ -12,30 +12,31 @@ class TwoPlayer extends Game {
 		this.enemyFinish = false;
 		this.roomID = roomID;
 	}
+	
 	start(){
-		const initID = this.roomID.split('#')[0];
-		this.communicateMovement()
-		if (initID != this.socket.id){
-			// const self = this;
+		const initID = this.roomID.split('#')[0],
+		      self = this;
 
-			window.requestAnimFrame(function(){
-			// 	const w = self.canvas.width,
-			// 	      h = self.canvas.height;
+		this.communicateMovement();
 
-			// 	self.context.clearRect(0,0 w, h);
-			});
+		if (initID == this.socket.id){
+			const data = {
+				'size': this.difficulty,
+				'room': this.roomID
+			};
 
-			return;
+        	this.socket.emit('requestMazeForRoom', data);
 		}
 
-		const data = {
-			'size': this.difficulty,
-			'room': this.roomID
-		};
 
-		console.log("ROOMID", this.roomID, "initID", initID);
+		window.requestAnimFrame(function(){
+			const w = self.canvas.width,
+			      h = self.canvas.height;
 
-        this.socket.emit('requestMazeForRoom', data);
+			console.log(self);
+			self.context.clearRect(0,0, w, h);
+		});
+
     }
 
 	gameLoop(){
@@ -55,9 +56,14 @@ class TwoPlayer extends Game {
 	}
 
 	drawScreen(offset){
-		console.log("COO", this.enemy.coord);
-		this.enemy.draw(this.context, offset, this.scale);
-		super.drawScreen(offset);
+		const ctx = this.context,
+              scale = this.scale;
+
+        this.map.draw(ctx, offset, scale);
+        this.enemy.handleHistory(ctx, offset, scale);
+        this.player.handleHistory(ctx, offset, scale);
+        this.enemy.draw(ctx, offset, scale);
+        this.player.draw(ctx, offset, scale);
 	}
 
 	win(){

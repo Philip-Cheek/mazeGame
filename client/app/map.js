@@ -186,7 +186,6 @@ class Map {
         for (let c = 0; c < size + sTiles.length; c++){
             this.tiles[c] = [];
             const rLen = sTiles.length > 0 ? sTiles[0].length : 0;
-            console.log(rLen);
             for (let r = 0; r < size + rLen; r++){
                 if(!pos){
                     this.tiles[c][r] = true;

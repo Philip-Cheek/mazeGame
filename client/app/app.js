@@ -33,7 +33,6 @@ class App {
 			const roomID = this.twoPlayer,
 			      game = new TwoPlayer(this.config, this.twoPlayer);
 
-			console.log("what?");
 			game.start();
 		}else{
 			const self = this;
