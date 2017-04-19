@@ -4,6 +4,7 @@ const mazeGen = require('./mazeGen.js'),
       clientManager = require('./clientManager.js');
 
 let bMazes = fillBMazes();
+let clients = [];
 
 
 module.exports = function(server){
@@ -13,6 +14,11 @@ module.exports = function(server){
 	io.sockets.on('connection', function(socket){
 
 		sendBMaze(socket);
+		clients.push(socket);
+
+		socket.on('disconnect', function(){
+			clientManager.leaveQueue(socket.id);
+		});
 
 		socket.on('requestMaze', function(size){
 			const maze = new mazeGen(size);
@@ -39,9 +45,15 @@ module.exports = function(server){
 
 		socket.on('requestMazeForRoom', function(data){
 			const maze = new mazeGen(data.size);
-			io.sockets.in(data.room).emit('incomingMaze', maze);
+
+			io.sockets.in(data.room).emit("incomingMaze", maze);
+		    
 		});
-			
+		
+
+		socket.on('leaveQueue', function(){
+			clientManager.leaveQueue(socket.id);
+		});
 
 	});
 

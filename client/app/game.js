@@ -24,7 +24,6 @@ class Game {
 
     initASettings(config){
         const self = this;
-
         this.colorSet = [
             ['#69111e', '#7D1424'],
             ['#27ae60', '#2ecc71'],

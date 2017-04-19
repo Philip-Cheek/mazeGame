@@ -10,7 +10,7 @@ class TimeTrial extends Game {
 
 	run(maze){
 		if (!maze){ 
-			return 
+			return;
 		}else if (this.difficulty > 5){
             this.clock.addTime(7 * 2);
         }

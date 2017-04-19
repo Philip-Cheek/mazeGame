@@ -35,13 +35,12 @@ var App = function () {
 		key: "run",
 		value: function run(inFrame) {
 			if (this.timeTrial) {
-				var game = new TimeTrial(this.config);
-				game.start();
+				new TimeTrial(this.config).start();
 			} else if (this.twoPlayer) {
 				var roomID = this.twoPlayer,
-				    _game = new TwoPlayer(this.config, this.twoPlayer);
+				    game = new TwoPlayer(this.config, this.twoPlayer);
 
-				_game.start();
+				game.start();
 			} else {
 				var self = this;
 				if (inFrame) {
@@ -247,6 +246,8 @@ var config = {
   'home': 'home',
   'restart': 'restart',
   'addID': 'add',
+  'connectID': 'connecting',
+  'backID': 'back',
   'socket': io.connect()
 };
 
@@ -292,7 +293,6 @@ var Game = function () {
         key: 'initASettings',
         value: function initASettings(config) {
             var self = this;
-
             this.colorSet = [['#69111e', '#7D1424'], ['#27ae60', '#2ecc71'], ['#e67e22', '#d35400'], ['#95a5a6', '#7f8c8d'], ['#9b59b6', '#8e44ad']];
 
             this.gameOver = new OverMenu(config, function () {
@@ -491,6 +491,8 @@ var HomeMenu = function () {
 		this.menu = document.getElementById(config.menuID);
 		this.timeTrial = document.getElementById(config.timeID);
 		this.twoPlayer = document.getElementById(config.twoID);
+		this.connect = document.getElementById(config.connectID);
+		this.back = document.getElementById(config.backID);
 		this.timeStart = startCallbacks.time;
 		this.twoStart = startCallbacks.two;
 		this.socket = config.socket;
@@ -508,7 +510,9 @@ var HomeMenu = function () {
 				'titleHeight': 0,
 				'menuHeight': 0,
 				'rate': 3,
-				'uiDone': false
+				'uiDone': false,
+				'connecting': false,
+				'conFrame': 0
 			};
 
 			this.socket.on('backgroundMaze', function (maze) {
@@ -521,6 +525,8 @@ var HomeMenu = function () {
 		value: function setMenu() {
 			this.menu.style.display = 'initial';
 			this.title.style.display = 'initial';
+			this.connect.style.display = 'none';
+			this.back.style.display = 'none';
 			this.title.style.height = 0;
 
 			var s = this,
@@ -532,9 +538,28 @@ var HomeMenu = function () {
 				s.timeStart();
 			};
 
+			this.back.onclick = function () {
+				s.connect.style.display = 'none';
+				s.twoPlayer.disabled = false;
+				s.timeTrial.disabled = false;
+				s.twoPlayer.style.display = 'initial';
+				s.timeTrial.style.display = 'initial';
+				s.animInfo.connecting = false;
+				s.animInfo.conFrame = 0;
+				s.connect.innerHTML = 'connecting';
+				s.socket.emit('leaveQueue');
+				s.back.style.display = 'none';
+			};
+
 			this.twoPlayer.onclick = function () {
 				s.socket.emit('connectTwoP');
 				s.twoPlayer.disabled = true;
+				s.timeTrial.disabled = true;
+				s.twoPlayer.style.display = 'none';
+				s.timeTrial.style.display = 'none';
+				s.connect.style.display = 'initial';
+				s.back.style.display = 'initial';
+				s.animInfo.connecting = true;
 			};
 
 			this.socket.on('connectedTwoP', function (roomID) {
@@ -561,7 +586,24 @@ var HomeMenu = function () {
 				this.revealUI();
 			}
 
+			if (this.connect) {
+				this.conElipse();
+			}
 			this.background.scaleMaze();
+		}
+	}, {
+		key: 'conElipse',
+		value: function conElipse() {
+			var cHTML = this.connect.innerHTML;
+			if (this.animInfo.conFrame % 20 == 0) {
+				if (cHTML.length == "connecting".length + 3) {
+					this.connect.innerHTML = "connecting";
+				} else {
+					this.connect.innerHTML += ".";
+				}
+			}
+
+			this.animInfo.conFrame++;
 		}
 	}, {
 		key: 'revealUI',
@@ -1403,6 +1445,15 @@ var TwoPlayer = function (_Game) {
 				console.log(self);
 				self.context.clearRect(0, 0, w, h);
 			});
+		}
+	}, {
+		key: 'segueLoop',
+		value: function segueLoop() {
+			if (this.enemy.coord[0] != this.map.start[0] || this.enemy.coord[0] != this.map.start[1]) {
+				this.enemy.coord = [this.map.start[0], this.map.start[1]];
+			};
+
+			_get(TwoPlayer.prototype.__proto__ || Object.getPrototypeOf(TwoPlayer.prototype), 'segueLoop', this).call(this);
 		}
 	}, {
 		key: 'gameLoop',

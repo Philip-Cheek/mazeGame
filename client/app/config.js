@@ -13,6 +13,8 @@ const config = {
         'home': 'home',
         'restart': 'restart',
         'addID': 'add',
+        'connectID': 'connecting',
+        'backID': 'back',
         'socket': io.connect()
       };
 

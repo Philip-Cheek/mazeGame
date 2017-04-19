@@ -7,6 +7,8 @@ class HomeMenu {
 		this.menu =  document.getElementById(config.menuID);
 		this.timeTrial =  document.getElementById(config.timeID);
 		this.twoPlayer = document.getElementById(config.twoID);
+		this.connect = document.getElementById(config.connectID);
+		this.back = document.getElementById(config.backID);
 		this.timeStart = startCallbacks.time;
 		this.twoStart = startCallbacks.two;
 		this.socket = config.socket;
@@ -22,7 +24,9 @@ class HomeMenu {
 			'titleHeight': 0,
 			'menuHeight': 0,
 			'rate': 3,
-			'uiDone': false
+			'uiDone': false,
+			'connecting': false,
+			'conFrame': 0,
 		}
 
 		this.socket.on('backgroundMaze', function(maze){
@@ -34,6 +38,8 @@ class HomeMenu {
 	setMenu(){
 		this.menu.style.display = 'initial';
 		this.title.style.display = 'initial';
+		this.connect.style.display = 'none';
+		this.back.style.display = 'none';
 		this.title.style.height = 0;
 
 		const s = this,
@@ -45,9 +51,28 @@ class HomeMenu {
 			s.timeStart();
 		}
 
+		this.back.onclick = function(){
+			s.connect.style.display = 'none'
+			s.twoPlayer.disabled = false;
+			s.timeTrial.disabled = false;
+			s.twoPlayer.style.display = 'initial';
+			s.timeTrial.style.display = 'initial';
+			s.animInfo.connecting = false;
+			s.animInfo.conFrame = 0;
+			s.connect.innerHTML = 'connecting';
+			s.socket.emit('leaveQueue');
+			s.back.style.display = 'none'
+		}
+
 		this.twoPlayer.onclick = function(){
 			s.socket.emit('connectTwoP');
 			s.twoPlayer.disabled = true;
+			s.timeTrial.disabled = true;
+			s.twoPlayer.style.display = 'none';
+			s.timeTrial.style.display = 'none';
+			s.connect.style.display = 'initial'
+			s.back.style.display = 'initial'
+			s.animInfo.connecting = true;
 		}
 
 		this.socket.on('connectedTwoP', function(roomID){
@@ -70,7 +95,23 @@ class HomeMenu {
 			this.revealUI();
 		}
 
+		if (this.connect){
+			this.conElipse();
+		}
 		this.background.scaleMaze();
+	}
+
+	conElipse(){
+		const cHTML = this.connect.innerHTML;
+		if (this.animInfo.conFrame % 20 == 0){
+			if (cHTML.length == "connecting".length + 3){
+				this.connect.innerHTML = "connecting";
+			}else{
+				this.connect.innerHTML += ".";
+			}
+		}
+
+		this.animInfo.conFrame++;
 	}
 
 	revealUI(){

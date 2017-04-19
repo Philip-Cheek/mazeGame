@@ -108,6 +108,27 @@ body{
 	#menu #time{
 		margin-top: 1em;
 	}
+
+	#menu #connecting{
+		position: absolute;
+		margin-top:3em;
+		margin-left:calc(50% - 2.5em);
+		display:none;
+		color:white;
+		font-family: arial;
+	}
+
+	#menu #back{
+		position:absolute;
+
+		display:none;
+		bottom:1em;
+	}
+
+	#menu #back:hover{
+		position:absolute;
+		bottom:1em;
+	}
 	
 button{
 	margin-top:.5em;
@@ -116,6 +137,7 @@ button{
 	border:none;
 	font-size: 2em;
 	width:5.6em;
+	height:2em;
 	margin-left: calc(50% - 2.5em);
 	padding:.3em;
 	transition:font-size .3s;
@@ -125,5 +147,6 @@ button:hover{
 	cursor: pointer;
 	background:#2C3E50;
 	color:white;
-	font-size: 1.9em;
+	height:2em;
+	font-size: 1.95em;
 }

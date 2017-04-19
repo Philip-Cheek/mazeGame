@@ -7,12 +7,12 @@
     "test": "command"
   },
   "dependencies": {
-    "body-parser": "^1.15.0",
-    "express": "^4.13.4",
-    "socket.io": "^1.4.5",
-    "helmet": "^2.2.0",
+    "body-parser": "latest",
+    "express": "latest",
+    "socket.io": "latest",
+    "helmet": "latest",
     "gulp": "latest",
-    "gulp-babel": "^6.1.2",
+    "gulp-babel": "latest",
     "babel-preset-es2015": "latest",
     "gulp-concat": "latest",
     "gulp-sourcemaps": "latest"

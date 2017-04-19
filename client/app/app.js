@@ -27,8 +27,7 @@ class App {
 
 	run(inFrame){
 		if (this.timeTrial){
-			const game = new TimeTrial(this.config);
-			game.start();
+			new TimeTrial(this.config).start();
 		}else if (this.twoPlayer){
 			const roomID = this.twoPlayer,
 			      game = new TwoPlayer(this.config, this.twoPlayer);

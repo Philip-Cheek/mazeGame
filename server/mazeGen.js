@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = class Maze{
+module.exports = class Maze {
 
     constructor(size){
         this.map = [];
@@ -66,7 +66,7 @@ module.exports = class Maze{
 
             for (let i = 0; i < side.length; i++){
                 if (side[i] !== 0 && !side[i]){
-                    side[i] = Math.floor(Math.random() * (mSize - 2)) + 2;
+                    side[i] = Math.floor(Math.random() * (mSize - 3)) + 3;
                 }
             }
 

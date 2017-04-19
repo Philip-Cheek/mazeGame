@@ -39,6 +39,15 @@ class TwoPlayer extends Game {
 
     }
 
+    segueLoop(){
+    	if (this.enemy.coord[0] != this.map.start[0] || this.enemy.coord[0] != this.map.start[1]){
+    		this.enemy.coord = [this.map.start[0], this.map.start[1]]
+    	};
+
+    	super.segueLoop();
+
+    }
+
 	gameLoop(){
 		if (this.enemy.finish){
             this.player.listen = false;
