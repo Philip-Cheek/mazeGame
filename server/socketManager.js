@@ -40,6 +40,7 @@ module.exports = function(server){
 		})
 
 		socket.on('playerWin', function(room){
+			console.log("PlayerWIN", room);
 			socket.broadcast.to(room).emit('enemyFinish');
 		});
 

@@ -9,7 +9,7 @@ body{
 }
 
 
-#clock{
+.mBar{
 	display:none;
 	position: absolute;
 	z-index:4;
@@ -61,7 +61,7 @@ body{
 	display:none;
 }
 
-#overTitle{
+.overTitle{
 	position: absolute;
 	display:none;
 	height:40%;

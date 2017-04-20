@@ -2,45 +2,59 @@
 
 class OverMenu {
 
-	constructor(config, rCallback){
+	constructor(config, restart, rCallback){
 		this.overlay = document.getElementById(config.overlay);
-		this.title = document.getElementById(config.overTitle);
+		this.titles = {
+            'win': document.getElementById(config.winID),
+            'lose': document.getElementById(config.loseID)
+        }
 		this.menu = document.getElementById(config.overMenu);
-		this.restartButton = document.getElementById(config.restart);
 		this.homeButton = document.getElementById(config.home);
-		this.restart = rCallback;
+        if (restart){ this.restart = rCallback };
 		this.oVal = .01;
-		this.setMenu();
-
+		this.restartButton = document.getElementById(config.restart);
+		this.setMenu(restart);
 	}
 
-	setMenu(url){
+	setMenu(restart){
 		const s = this;
 
 		this.homeButton.onclick = function(){
 			window.location.href = '/';
 		}
 
-		this.restartButton.onclick = function(){
-			s.overlay.style.opacity = 0;
-			s.menu.style.opacity = 0;
-			s.title.style.display = 'none';
-			s.oVal = .01;
+        if (restart){
+            this.restartButton.style.display = 'initial';
+            this.restartButton.onclick = function(){
+                s.overlay.style.opacity = 0;
+                s.menu.style.opacity = 0;
+                s.titles.win.style.display = 'none';
+                s.titles.lose.style.display = 'none';
+                s.oVal = .01;
 
-			s.restart();
-		}
+                s.restart();
+            }
+        }else{
+            this.restartButton.style.display = 'none';
+        }
 
 		this.overlay.style.opacity = 0;
 		this.menu.style.opacity = 0;
 		this.overlay.style.display = 'initial';
 		this.menu.style.display = 'none';
-		this.title.style.display = 'none';
+		this.titles.win.style.display = 'none';
+        this.titles.lose.style.display = 'none';
 	}
 
-	showScreen(){
-		const self = this;
+	showScreen(state){
+        if (state != 'win' && state != 'lose'){
+            return;
+        }
 
-		this.title.style.display = 'initial';
+        const title = this.titles[state],
+		      self = this;
+        
+		title.style.display = 'initial';
 		this.menu.style.display = 'initial'
 
 		window.requestAnimFrame(function(){

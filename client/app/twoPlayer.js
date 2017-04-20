@@ -9,15 +9,20 @@ class TwoPlayer extends Game {
             'history': 'gray'
 		});
 
-		this.enemyFinish = false;
 		this.roomID = roomID;
+		this.gameOver = new OverMenu(config, false);
+		this.scoreBoard = new ScoreBoard(config.scoreLeft, config.scoreRight, config.scoreBoard);
+		this.communicateMovement();
+	}
+
+	run(maze){
+		this.enemy.reSet();
+		super.run(maze);
 	}
 	
 	start(){
 		const initID = this.roomID.split('#')[0],
 		      self = this;
-
-		this.communicateMovement();
 
 		if (initID == this.socket.id){
 			const data = {
@@ -33,7 +38,6 @@ class TwoPlayer extends Game {
 			const w = self.canvas.width,
 			      h = self.canvas.height;
 
-			console.log(self);
 			self.context.clearRect(0,0, w, h);
 		});
 
@@ -49,9 +53,9 @@ class TwoPlayer extends Game {
     }
 
 	gameLoop(){
-		if (this.enemy.finish){
-            this.player.listen = false;
-            this.gameOver.showScreen();
+		const oStat = this.scoreBoard.over();
+		if (oStat){
+            this.gameOver(oStat);
             return;
         }
 
@@ -76,9 +80,15 @@ class TwoPlayer extends Game {
 	}
 
 	win(){
-		const id = this.roomID;
-		this.socket.emit("playerWin", id);
-        this.player.listen = false;
+		this.socket.emit("playerWin", this.roomID);
+        this.scoreBoard.scorePoint('left');
+        this.difficulty += 2;
+        if (!this.scoreBoard.over()){
+        	this.socket.emit('requestMazeForRoom', {
+				'size': this.difficulty,
+				'room': this.roomID
+			});
+        }
 	}
 
 	communicateMovement(){
@@ -89,7 +99,7 @@ class TwoPlayer extends Game {
 		});
 
 		this.socket.on('enemyFinish', function(){
-			self.enemyFinish = false;
+			self.scoreBoard.scorePoint('right');
 		});
 	}
 }

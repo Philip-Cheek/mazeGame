@@ -4,8 +4,11 @@ class TimeTrial extends Game {
 
 	constructor(config){
 		super(config);
+		const self = this;
 		this.clock = new Clock(config.clockID, config.addID);
-
+		this.gameOver = new OverMenu(config, true, function(){
+            self.gameReset();
+        });
 	}
 
 	run(maze){
@@ -32,7 +35,7 @@ class TimeTrial extends Game {
 
 		if (this.clock.outOfTime()){
             this.player.listen = false;
-            this.gameOver.showScreen();
+            this.gameOver.showScreen('lose');
             return;
         }
 

@@ -38,8 +38,7 @@ class HomeMenu {
 	setMenu(){
 		this.menu.style.display = 'initial';
 		this.title.style.display = 'initial';
-		this.connect.style.display = 'none';
-		this.back.style.display = 'none';
+		this.connect.style.display = 'none'
 		this.title.style.height = 0;
 
 		const s = this,
@@ -57,11 +56,7 @@ class HomeMenu {
 			s.timeTrial.disabled = false;
 			s.twoPlayer.style.display = 'initial';
 			s.timeTrial.style.display = 'initial';
-			s.animInfo.connecting = false;
-			s.animInfo.conFrame = 0;
-			s.connect.innerHTML = 'connecting';
-			s.socket.emit('leaveQueue');
-			s.back.style.display = 'none'
+			s.animInfo
 		}
 
 		this.twoPlayer.onclick = function(){
@@ -71,7 +66,6 @@ class HomeMenu {
 			s.twoPlayer.style.display = 'none';
 			s.timeTrial.style.display = 'none';
 			s.connect.style.display = 'initial'
-			s.back.style.display = 'initial'
 			s.animInfo.connecting = true;
 		}
 

@@ -60,13 +60,14 @@ module.exports = class Maze {
                 [this.size - 1, null], 
                 [null, 0], 
                 [null, this.size - 1]
-            ], mSize = this.size;
+            ], mSize = this.size - 1;
 
             let side = sides[Math.floor(Math.random() * sides.length)];
 
             for (let i = 0; i < side.length; i++){
                 if (side[i] !== 0 && !side[i]){
-                    side[i] = Math.floor(Math.random() * (mSize - 3)) + 3;
+                    side[i] = Math.floor(Math.random() * (mSize - 2)) + 2;
+                    console.log(side[i]);
                 }
             }
 

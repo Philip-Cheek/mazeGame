@@ -37,10 +37,8 @@ var App = function () {
 			if (this.timeTrial) {
 				new TimeTrial(this.config).start();
 			} else if (this.twoPlayer) {
-				var roomID = this.twoPlayer,
-				    game = new TwoPlayer(this.config, this.twoPlayer);
-
-				game.start();
+				var roomID = this.twoPlayer;
+				new TwoPlayer(this.config, roomID).start();
 			} else {
 				var self = this;
 				if (inFrame) {
@@ -240,7 +238,8 @@ var config = {
   'timeID': 'time',
   'twoID': 'two',
   'clockID': 'clock',
-  'overTitle': 'overTitle',
+  'winID': 'win',
+  'loseID': 'lose',
   'overMenu': 'overMenu',
   'overlay': 'overlay',
   'home': 'home',
@@ -248,6 +247,9 @@ var config = {
   'addID': 'add',
   'connectID': 'connecting',
   'backID': 'back',
+  'scoreLeft': 'left',
+  'scoreRight': 'right',
+  'scoreBoard': 'score',
   'socket': io.connect()
 };
 
@@ -283,7 +285,6 @@ var Game = function () {
         this.colorHistory = [];
         this.difficulty = 5;
         this.colorSet = [];
-        this.gameOver;
         this.scale;
         this.socket = config.socket;
         this.initASettings(config);
@@ -294,10 +295,6 @@ var Game = function () {
         value: function initASettings(config) {
             var self = this;
             this.colorSet = [['#69111e', '#7D1424'], ['#27ae60', '#2ecc71'], ['#e67e22', '#d35400'], ['#95a5a6', '#7f8c8d'], ['#9b59b6', '#8e44ad']];
-
-            this.gameOver = new OverMenu(config, function () {
-                self.gameReset();
-            });
 
             this.socket.on('incomingMaze', function (maze) {
                 self.run(maze);
@@ -526,7 +523,6 @@ var HomeMenu = function () {
 			this.menu.style.display = 'initial';
 			this.title.style.display = 'initial';
 			this.connect.style.display = 'none';
-			this.back.style.display = 'none';
 			this.title.style.height = 0;
 
 			var s = this,
@@ -544,11 +540,7 @@ var HomeMenu = function () {
 				s.timeTrial.disabled = false;
 				s.twoPlayer.style.display = 'initial';
 				s.timeTrial.style.display = 'initial';
-				s.animInfo.connecting = false;
-				s.animInfo.conFrame = 0;
-				s.connect.innerHTML = 'connecting';
-				s.socket.emit('leaveQueue');
-				s.back.style.display = 'none';
+				s.animInfo;
 			};
 
 			this.twoPlayer.onclick = function () {
@@ -558,7 +550,6 @@ var HomeMenu = function () {
 				s.twoPlayer.style.display = 'none';
 				s.timeTrial.style.display = 'none';
 				s.connect.style.display = 'initial';
-				s.back.style.display = 'initial';
 				s.animInfo.connecting = true;
 			};
 
@@ -1121,49 +1112,66 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var OverMenu = function () {
-	function OverMenu(config, rCallback) {
+	function OverMenu(config, restart, rCallback) {
 		_classCallCheck(this, OverMenu);
 
 		this.overlay = document.getElementById(config.overlay);
-		this.title = document.getElementById(config.overTitle);
+		this.titles = {
+			'win': document.getElementById(config.winID),
+			'lose': document.getElementById(config.loseID)
+		};
 		this.menu = document.getElementById(config.overMenu);
-		this.restartButton = document.getElementById(config.restart);
 		this.homeButton = document.getElementById(config.home);
-		this.restart = rCallback;
+		if (restart) {
+			this.restart = rCallback;
+		};
 		this.oVal = .01;
-		this.setMenu();
+		this.restartButton = document.getElementById(config.restart);
+		this.setMenu(restart);
 	}
 
 	_createClass(OverMenu, [{
 		key: 'setMenu',
-		value: function setMenu(url) {
+		value: function setMenu(restart) {
 			var s = this;
 
 			this.homeButton.onclick = function () {
 				window.location.href = '/';
 			};
 
-			this.restartButton.onclick = function () {
-				s.overlay.style.opacity = 0;
-				s.menu.style.opacity = 0;
-				s.title.style.display = 'none';
-				s.oVal = .01;
+			if (restart) {
+				this.restartButton.style.display = 'initial';
+				this.restartButton.onclick = function () {
+					s.overlay.style.opacity = 0;
+					s.menu.style.opacity = 0;
+					s.titles.win.style.display = 'none';
+					s.titles.lose.style.display = 'none';
+					s.oVal = .01;
 
-				s.restart();
-			};
+					s.restart();
+				};
+			} else {
+				this.restartButton.style.display = 'none';
+			}
 
 			this.overlay.style.opacity = 0;
 			this.menu.style.opacity = 0;
 			this.overlay.style.display = 'initial';
 			this.menu.style.display = 'none';
-			this.title.style.display = 'none';
+			this.titles.win.style.display = 'none';
+			this.titles.lose.style.display = 'none';
 		}
 	}, {
 		key: 'showScreen',
-		value: function showScreen() {
-			var self = this;
+		value: function showScreen(state) {
+			if (state != 'win' && state != 'lose') {
+				return;
+			}
 
-			this.title.style.display = 'initial';
+			var title = this.titles[state],
+			    self = this;
+
+			title.style.display = 'initial';
 			this.menu.style.display = 'initial';
 
 			window.requestAnimFrame(function () {
@@ -1322,6 +1330,48 @@ var Player = function () {
 
     return Player;
 }();
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ScoreBoard = function () {
+	function ScoreBoard(leftID, rightID, scoreBoardID) {
+		_classCallCheck(this, ScoreBoard);
+
+		this.score = { 'left': 0, 'right': 0 };
+		this.left = document.getElementById(leftID);
+		this.right = document.getElementById(rightID);
+
+		document.getElementById(scoreBoardID).style.display = 'initial';
+	}
+
+	_createClass(ScoreBoard, [{
+		key: 'scorePoint',
+		value: function scorePoint(dir) {
+			if (dir != 'left' && dir != 'right') {
+				return;
+			};
+
+			this.score[dir]++;
+			this[dir].innerHTML = this.score[dir].toString();
+		}
+	}, {
+		key: 'over',
+		value: function over() {
+			if (this.score.right - this.score.left > 1) {
+				return 'lose';
+			} else if (this.score.left - this.score.right > 1) {
+				return 'win';
+			} else {
+				return false;
+			}
+		}
+	}]);
+
+	return ScoreBoard;
+}();
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1342,8 +1392,11 @@ var TimeTrial = function (_Game) {
 
 		var _this = _possibleConstructorReturn(this, (TimeTrial.__proto__ || Object.getPrototypeOf(TimeTrial)).call(this, config));
 
+		var self = _this;
 		_this.clock = new Clock(config.clockID, config.addID);
-
+		_this.gameOver = new OverMenu(config, true, function () {
+			self.gameReset();
+		});
 		return _this;
 	}
 
@@ -1375,7 +1428,7 @@ var TimeTrial = function (_Game) {
 
 			if (this.clock.outOfTime()) {
 				this.player.listen = false;
-				this.gameOver.showScreen();
+				this.gameOver.showScreen('lose');
 				return;
 			}
 
@@ -1416,18 +1469,24 @@ var TwoPlayer = function (_Game) {
 			'history': 'gray'
 		});
 
-		_this.enemyFinish = false;
 		_this.roomID = roomID;
+		_this.gameOver = new OverMenu(config, false);
+		_this.scoreBoard = new ScoreBoard(config.scoreLeft, config.scoreRight, config.scoreBoard);
+		_this.communicateMovement();
 		return _this;
 	}
 
 	_createClass(TwoPlayer, [{
+		key: 'run',
+		value: function run(maze) {
+			this.enemy.reSet();
+			_get(TwoPlayer.prototype.__proto__ || Object.getPrototypeOf(TwoPlayer.prototype), 'run', this).call(this, maze);
+		}
+	}, {
 		key: 'start',
 		value: function start() {
 			var initID = this.roomID.split('#')[0],
 			    self = this;
-
-			this.communicateMovement();
 
 			if (initID == this.socket.id) {
 				var data = {
@@ -1442,7 +1501,6 @@ var TwoPlayer = function (_Game) {
 				var w = self.canvas.width,
 				    h = self.canvas.height;
 
-				console.log(self);
 				self.context.clearRect(0, 0, w, h);
 			});
 		}
@@ -1458,9 +1516,9 @@ var TwoPlayer = function (_Game) {
 	}, {
 		key: 'gameLoop',
 		value: function gameLoop() {
-			if (this.enemy.finish) {
-				this.player.listen = false;
-				this.gameOver.showScreen();
+			var oStat = this.scoreBoard.over();
+			if (oStat) {
+				this.gameOver(oStat);
 				return;
 			}
 
@@ -1487,9 +1545,15 @@ var TwoPlayer = function (_Game) {
 	}, {
 		key: 'win',
 		value: function win() {
-			var id = this.roomID;
-			this.socket.emit("playerWin", id);
-			this.player.listen = false;
+			this.socket.emit("playerWin", this.roomID);
+			this.scoreBoard.scorePoint('left');
+			this.difficulty += 2;
+			if (!this.scoreBoard.over()) {
+				this.socket.emit('requestMazeForRoom', {
+					'size': this.difficulty,
+					'room': this.roomID
+				});
+			}
 		}
 	}, {
 		key: 'communicateMovement',
@@ -1501,7 +1565,7 @@ var TwoPlayer = function (_Game) {
 			});
 
 			this.socket.on('enemyFinish', function () {
-				self.enemyFinish = false;
+				self.scoreBoard.scorePoint('right');
 			});
 		}
 	}]);

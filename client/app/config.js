@@ -1,22 +1,26 @@
 'use strict';
 
 const config = {
-        'canvasID': 'canvas',
-        'titleID': 'title',
-        'menuID': 'menu',
-        'timeID': 'time',
-        'twoID': 'two',
-        'clockID': 'clock',
-        'overTitle': 'overTitle',
-        'overMenu': 'overMenu',
-        'overlay': 'overlay',
-        'home': 'home',
-        'restart': 'restart',
-        'addID': 'add',
-        'connectID': 'connecting',
-        'backID': 'back',
-        'socket': io.connect()
-      };
+  'canvasID': 'canvas',
+  'titleID': 'title',
+  'menuID': 'menu',
+  'timeID': 'time',
+  'twoID': 'two',
+  'clockID': 'clock',
+  'winID': 'win',
+  'loseID': 'lose',
+  'overMenu': 'overMenu',
+  'overlay': 'overlay',
+  'home': 'home',
+  'restart': 'restart',
+  'addID': 'add',
+  'connectID': 'connecting',
+  'backID': 'back',
+  'scoreLeft': 'left',
+  'scoreRight': 'right',
+  'scoreBoard': 'score',
+  'socket': io.connect()
+};
 
 window.onload = function(){
   new App(config).run();

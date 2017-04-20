@@ -29,10 +29,8 @@ class App {
 		if (this.timeTrial){
 			new TimeTrial(this.config).start();
 		}else if (this.twoPlayer){
-			const roomID = this.twoPlayer,
-			      game = new TwoPlayer(this.config, this.twoPlayer);
-
-			game.start();
+			const roomID = this.twoPlayer;
+			new TwoPlayer(this.config, roomID).start();
 		}else{
 			const self = this;
 			if (inFrame){ this.menu.animate() };

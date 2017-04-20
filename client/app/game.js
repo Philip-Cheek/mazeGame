@@ -16,7 +16,6 @@ class Game {
         this.colorHistory = [];
         this.difficulty = 5;
         this.colorSet = [];
-        this.gameOver;
         this.scale;
         this.socket = config.socket;
         this.initASettings(config)
@@ -31,10 +30,6 @@ class Game {
             ['#95a5a6', '#7f8c8d'],
             ['#9b59b6', '#8e44ad']
         ]
-
-        this.gameOver = new OverMenu(config, function(){
-            self.gameReset();
-        });
 
         this.socket.on('incomingMaze', function(maze){
             self.run(maze);
