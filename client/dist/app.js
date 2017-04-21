@@ -1473,6 +1473,7 @@ var TwoPlayer = function (_Game) {
 		_this.gameOver = new OverMenu(config, false);
 		_this.scoreBoard = new ScoreBoard(config.scoreLeft, config.scoreRight, config.scoreBoard);
 		_this.communicateMovement();
+		_this.eDisconnect = false;
 		return _this;
 	}
 
@@ -1518,8 +1519,11 @@ var TwoPlayer = function (_Game) {
 		value: function gameLoop() {
 			var oStat = this.scoreBoard.over();
 			if (oStat) {
-				this.gameOver(oStat);
+				this.gameOver.showScreen(oStat);
+				this.socket.emit("gameFinish");
 				return;
+			} else if (this.eDisconnect) {
+				this.gameOver.showScreen('win');
 			}
 
 			var sendData = {
@@ -1553,12 +1557,26 @@ var TwoPlayer = function (_Game) {
 					'size': this.difficulty,
 					'room': this.roomID
 				});
+			} else {
+				var self = this,
+				    offset = this.viewPort.offset(this.player.coord, this.scale);
+
+				this.context.scale(this.scale, this.scale);
+				this.drawScreen(offset);
+
+				window.requestAnimFrame(function () {
+					self.gameLoop();
+				});
 			}
 		}
 	}, {
 		key: 'communicateMovement',
 		value: function communicateMovement() {
 			var self = this;
+
+			this.socket.on('eDisconnect', function () {
+				self.eDisconnect = true;
+			});
 
 			this.socket.on('enemyUpdate', function (coord) {
 				self.enemy.coord = coord;

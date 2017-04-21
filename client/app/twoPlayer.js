@@ -13,6 +13,7 @@ class TwoPlayer extends Game {
 		this.gameOver = new OverMenu(config, false);
 		this.scoreBoard = new ScoreBoard(config.scoreLeft, config.scoreRight, config.scoreBoard);
 		this.communicateMovement();
+		this.eDisconnect = false;
 	}
 
 	run(maze){
@@ -55,8 +56,11 @@ class TwoPlayer extends Game {
 	gameLoop(){
 		const oStat = this.scoreBoard.over();
 		if (oStat){
-            this.gameOver(oStat);
+            this.gameOver.showScreen(oStat);
+            this.socket.emit("gameFinish");
             return;
+        }else if (this.eDisconnect){
+        	this.gameOver.showScreen('win');
         }
 
         const sendData = {
@@ -88,11 +92,28 @@ class TwoPlayer extends Game {
 				'size': this.difficulty,
 				'room': this.roomID
 			});
+        }else{
+        	const self = this,
+        	      offset = this.viewPort.offset(
+	                this.player.coord, 
+	                this.scale
+              	  );
+              	  
+            this.context.scale(this.scale, this.scale);
+        	this.drawScreen(offset);
+
+        	window.requestAnimFrame(function(){
+        		self.gameLoop();
+        	})
         }
 	}
 
 	communicateMovement(){
 		const self = this;
+
+		this.socket.on('eDisconnect', function(){
+			self.eDisconnect = true;
+		});
 
 		this.socket.on('enemyUpdate', function(coord){
 			self.enemy.coord = coord;

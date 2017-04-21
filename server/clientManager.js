@@ -4,6 +4,7 @@ class ClientManager {
 
 	constructor(){
 		this.queue = [];
+		this.rooms = {};
 	}
 
 	requestRoom(socket){
@@ -19,7 +20,26 @@ class ClientManager {
 		socket.join(room);
 		peer.join(room);
 
+		this.rooms[socket.id] = room;
+		this.rooms[peer.id] = room;
+
 		return {'status': true, room: room};
+	}
+
+	removeRoom(room){
+		for (let sock in this.rooms){
+			if (this.rooms[sock] = room){
+				delete this.rooms[sock];
+			}
+		}
+	}
+
+	leaveRoom(socketID){
+		const room = this.rooms[socketID];
+		if (room){ 
+			delete this.rooms[socketID];
+			return room;
+		}
 	}
 
 	leaveQueue(socketID){

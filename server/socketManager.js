@@ -17,12 +17,23 @@ module.exports = function(server){
 		clients.push(socket);
 
 		socket.on('disconnect', function(){
+            console.log("word", socket.id);
 			clientManager.leaveQueue(socket.id);
+			const room = clientManager.leaveRoom(socket.id);
+            console.log(room);
+			if (room){
+				socket.broadcast.to(room).emit("eDisconnect");
+				clientManager.removeRoom(room);
+			}
 		});
 
 		socket.on('requestMaze', function(size){
 			const maze = new mazeGen(size);
 			socket.emit('incomingMaze', maze);
+		});
+
+		socket.on('gameFinish', function(){
+			clientManager.leaveRoom(socket.id);
 		});
 
 		socket.on('connectTwoP', function(){
